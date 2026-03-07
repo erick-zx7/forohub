@@ -3,6 +3,8 @@ package com.alura.foro_hub.domain.topico;
 import com.alura.foro_hub.domain.topico.dto.TopicoRequest;
 import com.alura.foro_hub.domain.topico.dto.TopicoResponse;
 import com.alura.foro_hub.domain.topico.dto.TopicoUpdateRequest;
+import com.alura.foro_hub.infra.exception.BusinessException;
+import com.alura.foro_hub.infra.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +27,7 @@ public class TopicoService {
         );
 
         if (duplicado) {
-            throw new RuntimeException(
+            throw new BusinessException(
                     "Ya existe un tópico activo con el mismo título y mensaje"
             );
         }
@@ -80,12 +82,12 @@ public class TopicoService {
     //Obtener topico activo por id
     private Topico obtenerTopicoActivo(Long id) {
         Topico topico = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Tópico no encontrado con id: " + id
                 ));
 
         if (!topico.estaActivo()) {
-            throw new RuntimeException(
+            throw new EntityNotFoundException(
                     "El tópico con id " + id + " fue eliminado"
             );
         }
